@@ -292,7 +292,7 @@ class CornersProblem(search.SearchProblem):
         # Please add any code here which you would like to use
         # in initializing the problem
         "*** YOUR CODE HERE ***"
-        self.startState=(self.startingPosition,(False,False,False,False))
+        self.startState=(self.startingPosition,(False,False,False,False)) #定义状态为第一位存储当前位置，第二位存储四个角的到达情况
 
     def getStartState(self):
         """
@@ -307,7 +307,7 @@ class CornersProblem(search.SearchProblem):
         Returns whether this search state is a goal state of the problem.
         """
         "*** YOUR CODE HERE ***"
-        return state[1][0]&state[1][1]&state[1][2]&state[1][3]
+        return state[1][0]&state[1][1]&state[1][2]&state[1][3] #当四个角都到达过后才算完成目标
 
     def getSuccessors(self, state: Any):
         """
@@ -335,6 +335,7 @@ class CornersProblem(search.SearchProblem):
             nextx,nexty=int(x+dx),int(y+dy)
             if not self.walls[nextx][nexty]:
                 nextPosition=(nextx,nexty)
+                #若到达某个角落则将该角落到达情况设置为True，否则到达情况不变
                 if nextPosition==self.corners[0]:
                     nextState=(nextPosition,(True,state[1][1],state[1][2],state[1][3]))
                 elif nextPosition==self.corners[1]:
@@ -382,13 +383,13 @@ def cornersHeuristic(state: Any, problem: CornersProblem):
 
     "*** YOUR CODE HERE ***"
     position=state[0]
-    manhanttanDistance=[0]
+    manhanttanDistance=[0] #存储到还未到达角落的距离
 
     for i in range(0,4):
         if not state[1][i]:
             manhanttanDistance.append(abs(position[0]-corners[i][0])+abs(position[1]-corners[i][1]))
 
-    return max(manhanttanDistance) # Default to trivial solution
+    return max(manhanttanDistance) #返回还没到达的角落的距离最大值
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"

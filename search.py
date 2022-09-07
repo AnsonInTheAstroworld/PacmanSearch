@@ -89,16 +89,17 @@ def depthFirstSearch(problem: SearchProblem):
     "*** YOUR CODE HERE ***"
     cur=problem.getStartState()
     closed=set()
-    frontier=util.Stack()
-    frontier.push((cur,[]))
+    frontier=util.Stack() #栈结构存放待扩展节点
+    frontier.push((cur,[])) #第一位存储节点状态，第二位存储路径
     while not frontier.isEmpty():
         cur,path=frontier.pop()
-        closed.add(cur)
-        if problem.isGoalState(cur):
+        if problem.isGoalState(cur): #命中，返回路径
             return path
-        for child in problem.getSuccessors(cur):
-            if child[0] not in closed:
-                frontier.push((child[0],path+[child[1]]))
+        if cur not in closed: #避免重复扩展结点
+            closed.add(cur)
+            for child in problem.getSuccessors(cur):
+                if child[0] not in closed: #将所有未扩展子节点放入栈
+                    frontier.push((child[0],path+[child[1]]))
 
 
 def breadthFirstSearch(problem: SearchProblem):
@@ -106,16 +107,16 @@ def breadthFirstSearch(problem: SearchProblem):
     "*** YOUR CODE HERE ***"
     cur=problem.getStartState()
     closed=set()
-    frontier=util.Queue()
-    frontier.push((cur,[]))
+    frontier=util.Queue() #用队列存储待扩展节点
+    frontier.push((cur,[])) #第一位存储节点状态，第二位存储路径
     while not frontier.isEmpty():
         cur,path=frontier.pop()
-        if problem.isGoalState(cur):
+        if problem.isGoalState(cur): #命中，返回路径
             return path
-        if cur not in closed:
+        if cur not in closed: #避免重复扩展节点
             closed.add(cur)
             for child in problem.getSuccessors(cur):
-                if child[0] not in closed:
+                if child[0] not in closed: #将所有未扩展子节点放入队列
                     frontier.push((child[0],path+[child[1]]))
 
 
@@ -134,20 +135,21 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-    cur={"state":problem.getStartState(),"path":[],"cost":0}
+    cur={"state":problem.getStartState(),"path":[],"cost":0} #第一位存储节点状态，第二位存储路径，第三位存储代价
     closed=set()
-    frontier=util.PriorityQueue()
+    frontier=util.PriorityQueue() #使用优先队列存储待扩展节点，优先取出代价小的节点
     frontier.update(cur,cur["cost"]+heuristic(cur["state"],problem))
     while not frontier.isEmpty():
         cur=frontier.pop()
         if problem.isGoalState(cur["state"]):
             return cur["path"]
-        if cur["state"] not in closed:
+        if cur["state"] not in closed: #避免重复扩展节点
+            closed.add(cur["state"])
             for child in problem.getSuccessors(cur["state"]):
                 if child[0] not in closed:
                     frontier.update({"state":child[0],"path":cur["path"]+[child[1]],"cost":cur["cost"]+child[2]},
-                                    cur["cost"]+child[2]+heuristic(child[0],problem))
-        closed.add(cur["state"])
+                                    cur["cost"]+child[2]+heuristic(child[0],problem)) #子节点的代价为父节点的代价、动作代价、启发函数值之和
+
 
 
 
